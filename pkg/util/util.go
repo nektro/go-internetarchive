@@ -11,6 +11,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/nektro/go-util/ansi/style"
+	"github.com/valyala/fastjson"
 )
 
 // DieOnError kills the procss if err is not nil
@@ -66,4 +67,14 @@ func GetDoc(urlS string, hdrs map[string]string) (*goquery.Document, []byte, boo
 		return doc, bys, false
 	}
 	return doc, bys, true
+}
+
+// GetJSON is similar to GetDoc but returns a fastjson object
+func GetJSON(urlS string, hdrs map[string]string) (*fastjson.Value, []byte, bool) {
+	bys, ok := GetBytes(urlS, hdrs)
+	if !ok {
+		return nil, bys, false
+	}
+	val, err := fastjson.ParseBytes(bys)
+	return val, bys, err == nil
 }

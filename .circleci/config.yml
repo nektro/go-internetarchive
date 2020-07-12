@@ -3,7 +3,7 @@
 version: 2.1
 jobs:
   build:
-    working_directory: /home/circleci/$CIRCLE_PROJECT_REPONAME
+    working_directory: /home/circleci/internetarchive
     docker:
       - image: circleci/golang:1.14
     steps:

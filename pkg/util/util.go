@@ -38,21 +38,27 @@ func Assert(b bool, msg string) {
 	}
 }
 
-// GetDoc fetch and html document and parses it
-func GetDoc(urlS string, hdrs map[string]string) (*goquery.Document, []byte, bool) {
+// GetBytes fetch urlS and return []byte
+func GetBytes(urlS string, hdrs map[string]string) ([]byte, bool) {
 	req, err := http.NewRequest(http.MethodGet, urlS, nil)
 	if err != nil {
-		return nil, nil, false
+		return nil, false
 	}
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, nil, false
+		return nil, false
 	}
 	if res.StatusCode >= 400 {
-		return nil, nil, false
+		return nil, false
 	}
 	bys, err := ioutil.ReadAll(res.Body)
-	if err != nil {
+	return bys, err == nil
+}
+
+// GetDoc fetch and html document and parses it
+func GetDoc(urlS string, hdrs map[string]string) (*goquery.Document, []byte, bool) {
+	bys, ok := GetBytes(urlS, hdrs)
+	if !ok {
 		return nil, bys, false
 	}
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(bys))

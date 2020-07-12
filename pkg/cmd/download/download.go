@@ -1,8 +1,6 @@
 package download
 
 import (
-	"bytes"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -50,20 +48,19 @@ var Cmd = &cobra.Command{
 
 func dlItem(dir, name string, b *mbpp.BarProxy) {
 	mbpp.CreateJob("item: "+name, func(bar *mbpp.BarProxy) {
-		bar.AddToTotal(2)
-		doc, bys, ok := GetDoc("https://archive.org/download/"+name+"/"+name+"_meta.xml", nil)
-		bar.Increment(1)
+		val, _, ok := GetJSON("https://archive.org/metadata/"+name, nil)
 		if !ok {
-			bar.Increment(1)
 			return
 		}
-		mt := doc.Find("mediatype").Text()
+		mt := string(val.GetStringBytes("metadata", "mediatype"))
+		if len(mt) == 0 {
+			return
+		}
 		if mt == "collection" {
-			bar.Increment(1)
 			go dlCollection(dir, name)
 			return
 		}
-		ad := doc.Find("addeddate").Text()
+		ad := string(val.GetStringBytes("metadata", "addeddate"))
 		ad = ad[:strings.IndexRune(ad, ' ')]
 		ad = strings.ReplaceAll(ad, "-", "/")
 		dir2 := dir
@@ -72,28 +69,26 @@ func dlItem(dir, name string, b *mbpp.BarProxy) {
 		}
 		dir2 += "/" + name
 		if util.DoesDirectoryExist(dir2) {
-			bar.Increment(1)
 			return
 		}
-		if onlyMeta {
-			os.MkdirAll(dir2, os.ModePerm)
-			f, _ := os.Create(dir2 + "/" + name + "_meta.xml")
-			io.Copy(f, bytes.NewReader(bys))
-			bar.Increment(1)
-			return
-		}
-		doc2, _, _ := GetDoc("https://archive.org/download/"+name+"/"+name+"_files.xml", nil)
-		bar.Increment(1)
-		arr := doc2.Find("file")
-		arr.Each(func(_ int, el *goquery.Selection) {
-			n, _ := el.Attr("name")
-			s, _ := el.Attr("source")
+		os.MkdirAll(dir2, os.ModePerm)
+		arr := val.GetArray("files")
+		for _, item := range arr {
+			n := string(item.GetStringBytes("name"))
+			s := string(item.GetStringBytes("source"))
 			if s != "original" {
+				continue
+			}
+			if onlyMeta {
+				if n != name+"_meta.xml" {
+					continue
+				}
+				go saveTo(dir2, name, n, nil)
 				return
 			}
 			bar.AddToTotal(1)
 			go saveTo(dir2, name, n, bar)
-		})
+		}
 	})
 }
 

@@ -18,11 +18,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	onlyMeta bool
+	dense    bool
+)
+
 func init() {
 	//
 	Cmd.Flags().StringP("save-dir", "o", "./data", "")
-	Cmd.Flags().Bool("only-meta", false, "")
-	Cmd.Flags().Bool("dense", false, "")
+	Cmd.Flags().BoolVar(&onlyMeta, "only-meta", false, "")
+	Cmd.Flags().BoolVar(&dense, "dense", false, "")
 	Cmd.Flags().IntP("concurrency", "c", 10, "")
 }
 
@@ -33,19 +38,17 @@ var Cmd = &cobra.Command{
 	Run: func(c *cobra.Command, args []string) {
 		Assert(len(args) > 0, "missing item identifier")
 		p, _ := c.Flags().GetString("save-dir")
-		om, _ := c.Flags().GetBool("only-meta")
-		dn, _ := c.Flags().GetBool("dense")
 		cc, _ := c.Flags().GetInt("concurrency")
 		d, _ := filepath.Abs(p)
 		mbpp.Init(cc)
-		dlItem(d, args[0], nil, om, dn)
+		dlItem(d, args[0], nil)
 		mbpp.Wait()
 		time.Sleep(time.Second)
 		log.Println(mbpp.GetCompletionMessage())
 	},
 }
 
-func dlItem(dir, name string, b *mbpp.BarProxy, onlyMeta, dense bool) {
+func dlItem(dir, name string, b *mbpp.BarProxy) {
 	mbpp.CreateJob("item: "+name, func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(2)
 		doc, bys, ok := GetDoc("https://archive.org/download/"+name+"/"+name+"_meta.xml", nil)
@@ -57,7 +60,7 @@ func dlItem(dir, name string, b *mbpp.BarProxy, onlyMeta, dense bool) {
 		mt := doc.Find("mediatype").Text()
 		if mt == "collection" {
 			bar.Increment(1)
-			go dlCollection(dir, name, onlyMeta, dense)
+			go dlCollection(dir, name)
 			return
 		}
 		ad := doc.Find("addeddate").Text()
@@ -94,7 +97,7 @@ func dlItem(dir, name string, b *mbpp.BarProxy, onlyMeta, dense bool) {
 	})
 }
 
-func dlCollection(dir, name string, onlyMeta, dense bool) {
+func dlCollection(dir, name string) {
 	mbpp.CreateJob("collection: "+name, func(bar *mbpp.BarProxy) {
 		dat := map[string]string{"x-requested-with": "XMLHttpRequest"}
 		for i := 1; true; i++ {
@@ -109,10 +112,10 @@ func dlCollection(dir, name string, onlyMeta, dense bool) {
 					return
 				}
 				if onlyMeta {
-					go dlItem(dir, n, bar, onlyMeta, dense)
+					go dlItem(dir, n, bar)
 					return
 				}
-				dlItem(dir, n, bar, onlyMeta, dense)
+				dlItem(dir, n, bar)
 			})
 		}
 	})

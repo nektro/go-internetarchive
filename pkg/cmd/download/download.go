@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	. "github.com/nektro/internetarchive/pkg/util"
@@ -72,6 +73,7 @@ func dlItem(dir, name string, b *mbpp.BarProxy) {
 			return
 		}
 		os.MkdirAll(dir2, os.ModePerm)
+		wg := new(sync.WaitGroup)
 		arr := val.GetArray("files")
 		for _, item := range arr {
 			n := string(item.GetStringBytes("name"))
@@ -83,11 +85,19 @@ func dlItem(dir, name string, b *mbpp.BarProxy) {
 				if n != name+"_meta.xml" {
 					continue
 				}
-				go saveTo(dir2, name, n, nil)
+				go saveTo(dir2, name, n, b)
 				return
 			}
 			bar.AddToTotal(1)
-			go saveTo(dir2, name, n, bar)
+			wg.Add(1)
+			go func() {
+				saveTo(dir2, name, n, bar)
+				wg.Done()
+			}()
+		}
+		wg.Wait()
+		if b != nil {
+			b.Increment(1)
 		}
 	})
 }
@@ -106,6 +116,7 @@ func dlCollection(dir, name string) {
 				if n == "__mobile_header__" {
 					return
 				}
+				bar.AddToTotal(1)
 				if onlyMeta {
 					go dlItem(dir, n, bar)
 					return

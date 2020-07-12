@@ -9,7 +9,7 @@
 [![goreportcard](https://goreportcard.com/badge/github.com/nektro/internetarchive)](https://goreportcard.com/report/github.com/nektro/internetarchive)
 [![downloads](https://img.shields.io/github/downloads/nektro/internetarchive/total.svg)](https://github.com/nektro/internetarchive/releases)
 
-`ia` is a command-line interface for interacting with https://archive.org/.
+`ia` is a command-line interface for interacting with https://archive.org/ written in Golang. It is an alternative to the offical Python client available here https://github.com/jjjake/internetarchive.
 
 ## Usage
 

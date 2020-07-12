@@ -40,3 +40,9 @@ Flags:
       --only-meta         when enabled, only saves _meta.xml files
   -o, --save-dir string    (default "./data")
 ```
+
+## Built With
+- Golang 1.14
+- https://github.com/spf13/cobra
+- https://github.com/nektro/go-util
+- https://github.com/PuerkitoBio/goquery

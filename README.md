@@ -46,3 +46,6 @@ Flags:
 - https://github.com/spf13/cobra
 - https://github.com/nektro/go-util
 - https://github.com/PuerkitoBio/goquery
+
+## License
+MIT

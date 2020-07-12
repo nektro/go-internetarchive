@@ -12,6 +12,7 @@ import (
 	. "github.com/nektro/internetarchive/pkg/util"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/nektro/go-util/arrays/stringsu"
 	"github.com/nektro/go-util/mbpp"
 	"github.com/nektro/go-util/util"
 	"github.com/spf13/cobra"
@@ -20,6 +21,11 @@ import (
 var (
 	onlyMeta bool
 	dense    bool
+	nSOrig   bool
+	nSMeta   bool
+	ySDerv   bool
+
+	sources = []string{"original", "metadata"}
 )
 
 func init() {
@@ -28,6 +34,9 @@ func init() {
 	Cmd.Flags().BoolVar(&onlyMeta, "only-meta", false, "when enabled, only saves _meta.xml files")
 	Cmd.Flags().BoolVar(&dense, "dense", false, "when enabled, stores items based on their creation date")
 	Cmd.Flags().IntP("concurrency", "c", 10, "number of concurrent download jobs to run at once")
+	Cmd.Flags().BoolVar(&nSOrig, "no-original", false, "when enabled, does not save items with a source of original")
+	Cmd.Flags().BoolVar(&nSMeta, "no-metadata", false, "when enabled, does not save items with a source of metadata")
+	Cmd.Flags().BoolVar(&ySDerv, "yes-derivative", false, "when enabled, does save items with a source of derivative")
 }
 
 // Cmd is the cobra.Command
@@ -38,6 +47,20 @@ var Cmd = &cobra.Command{
 		Assert(len(args) > 0, "missing item identifier")
 		p, _ := c.Flags().GetString("save-dir")
 		cc, _ := c.Flags().GetInt("concurrency")
+		nso, _ := c.Flags().GetBool("no-original")
+		nsm, _ := c.Flags().GetBool("no-metadata")
+		ysd, _ := c.Flags().GetBool("yes-derivative")
+
+		if nso {
+			sources = stringsu.Remove(sources, "original")
+		}
+		if nsm {
+			sources = stringsu.Remove(sources, "metadata")
+		}
+		if ysd {
+			sources = append(sources, "derivative")
+		}
+
 		d, _ := filepath.Abs(p)
 		mbpp.Init(cc)
 		dlItem(d, args[0], nil)
@@ -85,7 +108,7 @@ func dlItem(dir, name string, b *mbpp.BarProxy) {
 				go saveTo(dir2, name, n, b)
 				return
 			}
-			if s != "original" {
+			if !stringsu.Contains(sources, s) {
 				continue
 			}
 			bar.AddToTotal(1)

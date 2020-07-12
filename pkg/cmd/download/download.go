@@ -26,9 +26,9 @@ var (
 func init() {
 	//
 	Cmd.Flags().StringP("save-dir", "o", "./data", "")
-	Cmd.Flags().BoolVar(&onlyMeta, "only-meta", false, "")
-	Cmd.Flags().BoolVar(&dense, "dense", false, "")
-	Cmd.Flags().IntP("concurrency", "c", 10, "")
+	Cmd.Flags().BoolVar(&onlyMeta, "only-meta", false, "when enabled, only saves _meta.xml files")
+	Cmd.Flags().BoolVar(&dense, "dense", false, "when enabled, stores items based on their creation date")
+	Cmd.Flags().IntP("concurrency", "c", 10, "number of concurrent download jobs to run at once")
 }
 
 // Cmd is the cobra.Command

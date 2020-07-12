@@ -78,15 +78,15 @@ func dlItem(dir, name string, b *mbpp.BarProxy) {
 		for _, item := range arr {
 			n := string(item.GetStringBytes("name"))
 			s := string(item.GetStringBytes("source"))
-			if s != "original" {
-				continue
-			}
 			if onlyMeta {
 				if n != name+"_meta.xml" {
 					continue
 				}
 				go saveTo(dir2, name, n, b)
 				return
+			}
+			if s != "original" {
+				continue
 			}
 			bar.AddToTotal(1)
 			wg.Add(1)

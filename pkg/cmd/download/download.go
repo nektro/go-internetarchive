@@ -1,4 +1,4 @@
-package main
+package download
 
 import (
 	"bytes"
@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nektro/internetarchive/pkg/cmd"
 	. "github.com/nektro/internetarchive/pkg/util"
 
 	"github.com/PuerkitoBio/goquery"
@@ -20,14 +19,15 @@ import (
 )
 
 func init() {
-	cmdDownload.Flags().StringP("save-dir", "o", "./data", "")
-	cmdDownload.Flags().Bool("only-meta", false, "")
-	cmdDownload.Flags().Bool("dense", false, "")
-	cmdDownload.Flags().IntP("concurrency", "c", 10, "")
-	cmd.Root.AddCommand(cmdDownload)
+	//
+	Cmd.Flags().StringP("save-dir", "o", "./data", "")
+	Cmd.Flags().Bool("only-meta", false, "")
+	Cmd.Flags().Bool("dense", false, "")
+	Cmd.Flags().IntP("concurrency", "c", 10, "")
 }
 
-var cmdDownload = &cobra.Command{
+// Cmd is the cobra.Command
+var Cmd = &cobra.Command{
 	Use:   "download",
 	Short: "download an item or collection",
 	Run: func(c *cobra.Command, args []string) {

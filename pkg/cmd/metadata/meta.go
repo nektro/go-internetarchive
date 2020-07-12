@@ -1,15 +1,4 @@
-package main
-
-import (
-	"encoding/json"
-	"encoding/xml"
-	"fmt"
-
-	"github.com/nektro/internetarchive/pkg/cmd"
-	. "github.com/nektro/internetarchive/pkg/util"
-
-	"github.com/spf13/cobra"
-)
+package metadata
 
 type iaMeta struct {
 	A string   `xml:"identifier,omitempty" json:"identifier,omitempty"`
@@ -37,26 +26,4 @@ type iaMeta struct {
 	U string   `xml:"num_top_ba,omitempty" json:"num_top_ba,omitempty"`
 	V []string `xml:"related_collection,omitempty" json:"related_collection,omitempty"`
 	W string   `xml:"show_search_by_year,omitempty" json:"show_search_by_year,omitempty"`
-}
-
-var cmdMetadata = &cobra.Command{
-	Use:   "metadata",
-	Short: "retrieve metadata for items and collections",
-	Run: func(c *cobra.Command, args []string) {
-		Assert(len(args) > 0, "missing item identifier")
-		name := args[0]
-		_, bys, ok := GetDoc("https://archive.org/download/"+name+"/"+name+"_meta.xml", nil)
-		if !ok {
-			LogError("errer finding metadata for item: " + name)
-			return
-		}
-		data := &iaMeta{}
-		xml.Unmarshal(bys, data)
-		jsn, _ := json.MarshalIndent(data, "", "    ")
-		fmt.Println(string(jsn))
-	},
-}
-
-func init() {
-	cmd.Root.AddCommand(cmdMetadata)
 }

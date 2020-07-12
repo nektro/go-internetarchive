@@ -23,6 +23,7 @@ func init() {
 	cmdDownload.Flags().StringP("save-dir", "o", "./data", "")
 	cmdDownload.Flags().Bool("only-meta", false, "")
 	cmdDownload.Flags().Bool("dense", false, "")
+	cmdDownload.Flags().IntP("concurrency", "c", 10, "")
 	cmd.Root.AddCommand(cmdDownload)
 }
 
@@ -34,8 +35,9 @@ var cmdDownload = &cobra.Command{
 		p, _ := c.Flags().GetString("save-dir")
 		om, _ := c.Flags().GetBool("only-meta")
 		dn, _ := c.Flags().GetBool("dense")
+		cc, _ := c.Flags().GetInt("concurrency")
 		d, _ := filepath.Abs(p)
-		mbpp.Init(10)
+		mbpp.Init(cc)
 		dlItem(d, args[0], nil, om, dn)
 		mbpp.Wait()
 		time.Sleep(time.Second)

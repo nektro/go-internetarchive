@@ -10,10 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nektro/go-util/util"
-
 	"github.com/PuerkitoBio/goquery"
 	"github.com/nektro/go-util/mbpp"
+	"github.com/nektro/go-util/util"
 	"github.com/spf13/cobra"
 )
 

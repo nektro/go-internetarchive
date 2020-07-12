@@ -5,6 +5,8 @@ import (
 	"encoding/xml"
 	"fmt"
 
+	"github.com/nektro/internetarchive/pkg/cmd"
+
 	"github.com/spf13/cobra"
 )
 
@@ -55,5 +57,5 @@ var cmdMetadata = &cobra.Command{
 }
 
 func init() {
-	cmdRoot.AddCommand(cmdMetadata)
+	cmd.Root.AddCommand(cmdMetadata)
 }

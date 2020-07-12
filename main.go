@@ -9,21 +9,17 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/nektro/internetarchive/pkg/cmd"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/nektro/go-util/ansi/style"
-	"github.com/spf13/cobra"
 )
 
 // Version takes in version string from build_all.sh
 var Version = "vMASTER"
 
-var cmdRoot = &cobra.Command{
-	Use:   "ia",
-	Short: "ia is a cli interface for Archive.org.",
-}
-
 func main() {
-	dieOnError(cmdRoot.Execute())
+	dieOnError(cmd.Root.Execute())
 }
 
 func dieOnError(err error, args ...string) {

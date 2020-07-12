@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nektro/internetarchive/pkg/cmd"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/nektro/go-util/mbpp"
 	"github.com/nektro/go-util/util"
@@ -19,7 +21,7 @@ import (
 func init() {
 	cmdDownload.Flags().StringP("save-dir", "o", "./data", "")
 	cmdDownload.Flags().Bool("only-meta", false, "")
-	cmdRoot.AddCommand(cmdDownload)
+	cmd.Root.AddCommand(cmdDownload)
 }
 
 var cmdDownload = &cobra.Command{

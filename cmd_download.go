@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/nektro/internetarchive/pkg/cmd"
+	. "github.com/nektro/internetarchive/pkg/util"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/nektro/go-util/mbpp"
@@ -28,7 +29,7 @@ var cmdDownload = &cobra.Command{
 	Use:   "download",
 	Short: "download an item or collection",
 	Run: func(c *cobra.Command, args []string) {
-		assert(len(args) > 0, "missing item identifier")
+		Assert(len(args) > 0, "missing item identifier")
 		p, _ := c.Flags().GetString("save-dir")
 		om, _ := c.Flags().GetBool("only-meta")
 		d, _ := filepath.Abs(p)
@@ -43,7 +44,7 @@ var cmdDownload = &cobra.Command{
 func dlItem(dir, name string, b *mbpp.BarProxy, onlyMeta bool) {
 	mbpp.CreateJob("item: "+name, func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(2)
-		doc, bys, ok := getDoc("https://archive.org/download/"+name+"/"+name+"_meta.xml", nil)
+		doc, bys, ok := GetDoc("https://archive.org/download/"+name+"/"+name+"_meta.xml", nil)
 		bar.Increment(1)
 		if !ok {
 			bar.Increment(1)
@@ -70,7 +71,7 @@ func dlItem(dir, name string, b *mbpp.BarProxy, onlyMeta bool) {
 			bar.Increment(1)
 			return
 		}
-		doc2, _, _ := getDoc("https://archive.org/download/"+name+"/"+name+"_files.xml", nil)
+		doc2, _, _ := GetDoc("https://archive.org/download/"+name+"/"+name+"_files.xml", nil)
 		bar.Increment(1)
 		arr := doc2.Find("file")
 		arr.Each(func(_ int, el *goquery.Selection) {
@@ -89,7 +90,7 @@ func dlCollection(dir, name string, onlyMeta bool) {
 	mbpp.CreateJob("collection: "+name, func(bar *mbpp.BarProxy) {
 		dat := map[string]string{"x-requested-with": "XMLHttpRequest"}
 		for i := 1; true; i++ {
-			doc, _, _ := getDoc("https://archive.org/details/"+name+"?&page="+strconv.Itoa(i), dat)
+			doc, _, _ := GetDoc("https://archive.org/details/"+name+"?&page="+strconv.Itoa(i), dat)
 			arr := doc.Find(".item-ia[data-id]")
 			if arr.Length() == 1 {
 				break

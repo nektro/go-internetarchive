@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/nektro/internetarchive/pkg/cmd"
+	. "github.com/nektro/internetarchive/pkg/util"
 
 	"github.com/spf13/cobra"
 )
@@ -42,11 +43,11 @@ var cmdMetadata = &cobra.Command{
 	Use:   "metadata",
 	Short: "retrieve metadata for items and collections",
 	Run: func(c *cobra.Command, args []string) {
-		assert(len(args) > 0, "missing item identifier")
+		Assert(len(args) > 0, "missing item identifier")
 		name := args[0]
-		_, bys, ok := getDoc("https://archive.org/download/"+name+"/"+name+"_meta.xml", nil)
+		_, bys, ok := GetDoc("https://archive.org/download/"+name+"/"+name+"_meta.xml", nil)
 		if !ok {
-			logError("errer finding metadata for item: " + name)
+			LogError("errer finding metadata for item: " + name)
 			return
 		}
 		data := &iaMeta{}

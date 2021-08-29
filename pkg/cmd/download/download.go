@@ -24,6 +24,7 @@ var (
 	nSOrig   bool
 	nSMeta   bool
 	ySDerv   bool
+	resume   bool
 
 	sources = []string{"original", "metadata"}
 )
@@ -37,6 +38,7 @@ func init() {
 	Cmd.Flags().BoolVar(&nSOrig, "no-original", false, "when enabled, does not save items with a source of original")
 	Cmd.Flags().BoolVar(&nSMeta, "no-metadata", false, "when enabled, does not save items with a source of metadata")
 	Cmd.Flags().BoolVar(&ySDerv, "yes-derivative", false, "when enabled, does save items with a source of derivative")
+	Cmd.Flags().BoolVar(&resume, "resume", false, "When enabled, performs a deeper check for item completion")
 }
 
 // Cmd is the cobra.Command
@@ -92,7 +94,7 @@ func dlItem(dir, name string, b *mbpp.BarProxy) {
 			dir2 += "/" + ad
 		}
 		dir2 += "/" + name
-		if util.DoesDirectoryExist(dir2) {
+		if !resume && util.DoesDirectoryExist(dir2) {
 			return
 		}
 		os.MkdirAll(dir2, os.ModePerm)

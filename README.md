@@ -39,6 +39,7 @@ Flags:
   -h, --help              help for download
       --only-meta         when enabled, only saves _meta.xml files
   -o, --save-dir string    (default "./data")
+      --resume            When enabled, performs a deeper check for item completion
 ```
 
 ## Built With

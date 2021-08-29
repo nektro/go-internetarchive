@@ -16,6 +16,7 @@ build_template() {
 # go tool dist list
 
 build_template darwin amd64
+build_template darwin arm64
 build_template dragonfly amd64
 build_template freebsd amd64
 build_template freebsd arm64
